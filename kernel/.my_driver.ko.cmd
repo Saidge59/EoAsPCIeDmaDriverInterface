@@ -1,0 +1,1 @@
+savedcmd_/home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T scripts/module.lds -o /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.ko /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.o /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.mod.o

@@ -1,0 +1,1 @@
+savedcmd_/home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/modules.order := {   echo /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.o; :; } > /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/modules.order
