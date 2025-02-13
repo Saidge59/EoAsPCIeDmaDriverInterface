@@ -1,3 +1,0 @@
-/home/denis/develop/EoAsPCIeDmaDriverInterface/user/build/CMakeFiles/driver_test.dir
-/home/denis/develop/EoAsPCIeDmaDriverInterface/user/build/CMakeFiles/edit_cache.dir
-/home/denis/develop/EoAsPCIeDmaDriverInterface/user/build/CMakeFiles/rebuild_cache.dir

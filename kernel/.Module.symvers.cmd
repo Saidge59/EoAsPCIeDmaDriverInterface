@@ -1,1 +1,0 @@
-savedcmd_/home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/Module.symvers -T /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/modules.order -i Module.symvers -e 

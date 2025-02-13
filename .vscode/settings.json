@@ -53,6 +53,9 @@
         "stop_token": "cpp",
         "streambuf": "cpp",
         "thread": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "my_driver.h": "c",
+        "public.h": "c",
+        "stdint.h": "c"
     }
 }

@@ -1,0 +1,14 @@
+
+kernel/*.ko
+kernel/*.o
+kernel/*.cmd
+
+user/build/
+
+kernel/my_driver.mod.c
+
+*.symvers
+
+*.order
+
+*.mod

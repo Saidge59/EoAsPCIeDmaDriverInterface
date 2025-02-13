@@ -1,1 +1,0 @@
-savedcmd_/home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.mod := printf '%s\n'   my_driver.o | awk '!x[$$0]++ { print("/home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/"$$0) }' > /home/denis/develop/EoAsPCIeDmaDriverInterface/kernel/my_driver.mod
