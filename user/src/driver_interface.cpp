@@ -1,10 +1,10 @@
-#include "DriverInterface.h"
+#include "driver_interface.h"
 #include <sys/eventfd.h>
 #include <sstream>
 
-std::mutex DriverInterface::g_mutex;
+std::mutex driver_interface::g_mutex;
 
-DriverInterface::DriverInterface(const char *devicePath)
+driver_interface::driver_interface(const char *devicePath)
 {
     std::lock_guard<std::mutex> lock(g_mutex);
     driverHandle_ = open(devicePath, O_RDWR);
@@ -14,7 +14,7 @@ DriverInterface::DriverInterface(const char *devicePath)
     }
 }
 
-DriverInterface::~DriverInterface()
+driver_interface::~driver_interface()
 {
     std::lock_guard<std::mutex> lock(g_mutex);
     if (driverHandle_ >= 0)
@@ -24,7 +24,7 @@ DriverInterface::~DriverInterface()
     }
 }
 
-bool DriverInterface::SendIoctl(unsigned long ioctlCode, void *arg)
+bool driver_interface::send_ioctl(unsigned long ioctlCode, void *arg)
 {
     if (driverHandle_ < 0)
     {
@@ -34,42 +34,42 @@ bool DriverInterface::SendIoctl(unsigned long ioctlCode, void *arg)
     return ioctl(driverHandle_, ioctlCode, arg) >= 0;
 }
 
-void DriverInterface::WriteRegister(uint8_t bar, uint64_t registerOffset, uint32_t value)
+void driver_interface::write_register(uint8_t bar, uint64_t registerOffset, uint32_t value)
 {
     REGESTRY_PARAMS info = {bar, registerOffset, value};
-    if (!SendIoctl(IOCTL_SET_DMA_REG, &info))
+    if (!send_ioctl(IOCTL_SET_DMA_REG, &info))
     {
         throw std::runtime_error("Failed to write to register");
     }
 }
 
-uint32_t DriverInterface::ReadRegister(uint8_t bar, uint64_t registerOffset)
+uint32_t driver_interface::read_register(uint8_t bar, uint64_t registerOffset)
 {
     REGESTRY_PARAMS info = {bar, registerOffset, 0};
-    if (!SendIoctl(IOCTL_GET_DMA_REG, &info))
+    if (!send_ioctl(IOCTL_GET_DMA_REG, &info))
     {
         throw std::runtime_error("Failed to read from register");
     }
     return info.value;
 }
 
-int DriverInterface::GetHandle() const
+int driver_interface::GetHandle() const
 {
     return driverHandle_;
 }
 
-void DriverInterface::ReadDMAMemoryMapAndEventHandles(GLOBAL_DATA_DMA_PARAMETERS &dmaParam, GLOBAL_MEM_MAP_DATA &memoryData, GLOBAL_EVENT_HANDLE_DATA &eventData)
+void driver_interface::read_DMA_memory_map_and_event_handles(GLOBAL_DATA_DMA_PARAMETERS &dmaParam, GLOBAL_MEM_MAP_DATA &memoryData, GLOBAL_EVENT_HANDLE_DATA &eventData)
 {
     std::lock_guard<std::mutex> lock(g_mutex);
 
-    auto readMemoryMap = [&]()
+    auto read_memory_map = [&]()
     {
         if (driverHandle_ < 0)
         {
             throw std::runtime_error("Invalid driver handle");
         }
 
-        if (!SendIoctl(IOCTL_GLOBAL_DMA_CONFIGURATION_GET, &dmaParam))
+        if (!send_ioctl(IOCTL_GLOBAL_DMA_CONFIGURATION_GET, &dmaParam))
         {
             throw std::runtime_error("Failed to call IOCTL_GLOBAL_DMA_CONFIGURATION_GET");
         }
@@ -94,30 +94,30 @@ void DriverInterface::ReadDMAMemoryMapAndEventHandles(GLOBAL_DATA_DMA_PARAMETERS
             }
         }
 
-        if (!SendIoctl(IOCTL_GLOBAL_EVENT_HANDLE_SET, sharedEventHandle_))
+        if (!send_ioctl(IOCTL_GLOBAL_EVENT_HANDLE_SET, sharedEventHandle_))
         {
             throw std::runtime_error("Failed to call IOCTL_GLOBAL_EVENT_HANDLE_SET");
         }
 
-        if (!SendIoctl(IOCTL_GLOBAL_EVENT_HANDLE_GET, &eventData))
+        if (!send_ioctl(IOCTL_GLOBAL_EVENT_HANDLE_GET, &eventData))
         {
             throw std::runtime_error("Failed to call IOCTL_GLOBAL_EVENT_HANDLE_GET");
         }
 
-        if (!SendIoctl(IOCTL_GLOBAL_MEM_MAP_GET, &memoryData))
+        if (!send_ioctl(IOCTL_GLOBAL_MEM_MAP_GET, &memoryData))
         {
             throw std::runtime_error("Failed to call IOCTL_GLOBAL_MEM_MAP_GET");
         }
     };
 
-    readMemoryMap();
+    read_memory_map();
 }
 
-void DriverInterface::StartStopDmaChannel(uint8_t channel, bool isStartDmaChannel, bool isCycle)
+void driver_interface::start_stop_DMA_channel(uint8_t channel, bool isStartDmaChannel, bool isCycle)
 {
     std::lock_guard<std::mutex> lock(g_mutex);
 
-    auto startStopDmaChannel = [&]()
+    auto start_stop_DMA_channel = [&]()
     {
         if (driverHandle_ < 0)
         {
@@ -135,17 +135,17 @@ void DriverInterface::StartStopDmaChannel(uint8_t channel, bool isStartDmaChanne
         }
 
         std::cout << "StartStopDmaChannel" << std::endl;
-        WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_CONTROL) + 0x40 * channel, DmaControlValue);
+        write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_CONTROL) + 0x40 * channel, DmaControlValue);
     };
 
-    startStopDmaChannel();
+    start_stop_DMA_channel();
 }
 
-void DriverInterface::StartStopDmaGlobal(bool isStartDmaGlobal, bool isRx)
+void driver_interface::start_stop_DMA_global(bool isStartDmaGlobal, bool isRx)
 {
     std::lock_guard<std::mutex> lock(g_mutex);
 
-    auto startStopDmaGlobal = [&]()
+    auto start_stop_DMA_global = [&]()
     {
         if (driverHandle_ < 0)
         {
@@ -155,25 +155,25 @@ void DriverInterface::StartStopDmaGlobal(bool isStartDmaGlobal, bool isRx)
         uint32_t value = isStartDmaGlobal ? 0x00000001 : 0x00000000;
         uint64_t address = isRx ? DEVICE_GLOBAL_RX_DMA_ENABLE_FPGA_DATA : DEVICE_GLOBAL_TX_DMA_ENABLE_FPGA_DATA;
 
-        WriteRegister(0, TransFormFpgaAddress(address), value);
+        write_register(0, trans_form_fpga_address(address), value);
     };
 
-    startStopDmaGlobal();
+    start_stop_DMA_global();
 }
 
-void DriverInterface::StartDmaConfigure(GLOBAL_START_DMA_CONFIGURATION &startDmaConfiguration, GLOBAL_MEM_MAP_DATA &data)
+void driver_interface::start_DMA_configure(GLOBAL_START_DMA_CONFIGURATION &startDmaConfiguration, GLOBAL_MEM_MAP_DATA &data)
 {
     std::lock_guard<std::mutex> lock(g_mutex);
 
-    auto configurationStartDma = [&]()
+    auto configuration_start_DMA = [&]()
     {
         if (driverHandle_ < 0)
         {
             throw std::runtime_error("Invalid driver handle");
         }
 
-        uint32_t InterruptStatusValue = ReadRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_INTERRUPT_FPGA_STATUS));
-        WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_INTERRUPT_FPGA_DATA), 0x00FF);
+        uint32_t InterruptStatusValue = read_register(0, trans_form_fpga_address(DEVICE_GLOBAL_INTERRUPT_FPGA_STATUS));
+        write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_INTERRUPT_FPGA_DATA), 0x00FF);
 
         int NumberOfChannels = std::min(startDmaConfiguration.DmaChannelsCount, static_cast<uint32_t>(MAX_NUM_CHANNELS));
         for (int channel = 0; channel < NumberOfChannels; channel++)
@@ -182,27 +182,27 @@ void DriverInterface::StartDmaConfigure(GLOBAL_START_DMA_CONFIGURATION &startDma
             if (NumberOfDescriptors == 0)
                 continue;
 
-            WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_CONTROL) + 0x40 * channel, 0x00000000);
-            WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_NUMBER) + 0x40 * channel, NumberOfDescriptors);
+            write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_CONTROL) + 0x40 * channel, 0x00000000);
+            write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_NUMBER) + 0x40 * channel, NumberOfDescriptors);
 
             for (int descriptor = 0; descriptor < NumberOfDescriptors; descriptor++)
             {
                 uint32_t PaLowValue = data.DataMemoryDmaChannels[channel].DmaMemoryDescriptors[descriptor].BufferPA & 0xFFFFFFFF;
                 uint32_t PaHighValue = (data.DataMemoryDmaChannels[channel].DmaMemoryDescriptors[descriptor].BufferPA >> 32) & 0xFFFFFFFF;
 
-                WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor, PaLowValue);
-                WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0x4, PaHighValue);
+                write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor, PaLowValue);
+                write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0x4, PaHighValue);
 
                 uint32_t DmaBufferSize = std::min(startDmaConfiguration.StartDmaChannels[channel].StartDmaDescriptors[descriptor].DmaDescriptorBufferSize, static_cast<uint32_t>(DESCRIPTOR_BUFFER_SIZE));
-                WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0x8, DmaBufferSize | (1 << 31));
+                write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0x8, DmaBufferSize | (1 << 31));
 
                 uint32_t IsDescriptorInterruptEnable = std::min(startDmaConfiguration.StartDmaChannels[channel].StartDmaDescriptors[descriptor].IsDescriptorInterruptEnable, static_cast<uint32_t>(true));
-                WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0xc, IsDescriptorInterruptEnable);
+                write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE) + 0x400 * channel + 0x10 * descriptor + 0xc, IsDescriptorInterruptEnable);
             }
         }
 
-        WriteRegister(0, TransFormFpgaAddress(DEVICE_GLOBAL_DMA_PPS_TRIGER), 0x00000000);
+        write_register(0, trans_form_fpga_address(DEVICE_GLOBAL_DMA_PPS_TRIGER), 0x00000000);
     };
 
-    configurationStartDma();
+    configuration_start_DMA();
 }

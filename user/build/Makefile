@@ -129,29 +129,29 @@ driver_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/build
 .PHONY : driver_test/fast
 
-src/DriverInterface.o: src/DriverInterface.cpp.o
-.PHONY : src/DriverInterface.o
+src/driver_interface.o: src/driver_interface.cpp.o
+.PHONY : src/driver_interface.o
 
 # target to build an object file
-src/DriverInterface.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/DriverInterface.cpp.o
-.PHONY : src/DriverInterface.cpp.o
+src/driver_interface.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/driver_interface.cpp.o
+.PHONY : src/driver_interface.cpp.o
 
-src/DriverInterface.i: src/DriverInterface.cpp.i
-.PHONY : src/DriverInterface.i
+src/driver_interface.i: src/driver_interface.cpp.i
+.PHONY : src/driver_interface.i
 
 # target to preprocess a source file
-src/DriverInterface.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/DriverInterface.cpp.i
-.PHONY : src/DriverInterface.cpp.i
+src/driver_interface.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/driver_interface.cpp.i
+.PHONY : src/driver_interface.cpp.i
 
-src/DriverInterface.s: src/DriverInterface.cpp.s
-.PHONY : src/DriverInterface.s
+src/driver_interface.s: src/driver_interface.cpp.s
+.PHONY : src/driver_interface.s
 
 # target to generate assembly for a file
-src/DriverInterface.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/DriverInterface.cpp.s
-.PHONY : src/DriverInterface.cpp.s
+src/driver_interface.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/driver_test.dir/build.make CMakeFiles/driver_test.dir/src/driver_interface.cpp.s
+.PHONY : src/driver_interface.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -186,9 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... driver_test"
-	@echo "... src/DriverInterface.o"
-	@echo "... src/DriverInterface.i"
-	@echo "... src/DriverInterface.s"
+	@echo "... src/driver_interface.o"
+	@echo "... src/driver_interface.i"
+	@echo "... src/driver_interface.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

@@ -56,7 +56,7 @@
 #define DEVICE_GLOBAL_DMA_REG_DESCRIPTORS_TABLE 0x0800 ///< Base address of the DMA descriptors table.
 
 ///< Function to transform FPGA address
-static inline uint64_t TransFormFpgaAddress(uint64_t address)
+static inline uint64_t trans_form_fpga_address(uint64_t address)
 {
     return address << 2; ///< Left shift by 2 positions to multiply by 4
 }
